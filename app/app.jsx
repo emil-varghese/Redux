@@ -15,3 +15,4 @@ ReactDOM.render(
 
 
 require('./redux-ex.jsx');
+require('./redux_ex1.jsx');
