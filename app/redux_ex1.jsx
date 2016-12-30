@@ -1,5 +1,7 @@
 var redux = require('redux');
 
+var actions = require('./actions/index');
+var store = require('./store/configureStore').configure();
 console.log('Starting');
 
 var stateDefault = {
@@ -8,8 +10,6 @@ var stateDefault = {
   todos: [],
   movies: []
 }
-var todoId = 1;
-var movieId = 1;
 
 var oldreducer = (state = stateDefault, action) => {
     //state = state || {name: 'Anonymous'};
@@ -54,118 +54,41 @@ var oldreducer = (state = stateDefault, action) => {
     }
 }
 
-//Search Reducer
-var searchReducer = (state = 'Anonymous' , action) => {
-  switch (action.type) {
-    case 'CHANGE_SEARCH':
-      return action.searchText;
-    default:
-      return state;
-  };
-};
-
-//Action Generator for Search
-var changeSearch = (searchText) => {
-  return {
-    type: 'CHANGE_SEARCH',
-    searchText: searchText
-  }
-};
-
-//Todo Reducer
-var todoReducer = (state = [], action) => {
-  switch (action.type) {
-    case 'ADD_TODO':
-      return [
-          ...state,
-          {
-            id: todoId++,
-            todo: action.todo
-          }
-        ];
-    case 'REMOVE_TODO':
-      return  state.filter( (todo) => todo.id !== action.id )
-    default:
-      return state;
-  };
-};
-
-var addTodo = (todo) => {
-  return {
-    type: 'ADD_TODO',
-    todo
-  }
-};
-
-var removeTodo = (id) => {
-  return {
-    type: 'REMOVE_TODO',
-    id : id
-  }
-};
-
-//Movie Reducer
-var movieReducer = (state = [], action) => {
-  switch (action.type) {
-    case 'ADD_MOVIE':
-      return [
-          ...state,
-          {
-            id: movieId++,
-            name: action.movie,
-            genre: action.genre
-          }
-        ];
-    default:
-      return state;
-  };
-};
-
-var addMovie = (movie,genre) => {
-  return {
-    type: 'ADD_MOVIE',
-    movie,
-    genre
-  }
-};
-
-var reducer = redux.combineReducers({
-  searchText: searchReducer,
-  todos: todoReducer,
-  movies: movieReducer
-});
-
-//Create Store, 2nd adds Redux dev tools
-var store = redux.createStore(reducer, redux.compose (
-  window.devToolsExtension ? window.devToolsExtension() : f => f
-));
 //Subscribe to changes
 var unsubscribe = store.subscribe( () => {
   var state = store.getState();
-  console.log('Search is ',state.searchText);
-  document.getElementById('app').innerHTML = state.searchText;
+  //console.log('Search is ',state.searchText);
+  //document.getElementById('app').innerHTML = state.searchText;
   console.log('New State', state);
+
+  if (state.map.isFetching) {
+    document.getElementById('app').innerHTML = 'Loading...';
+  } else if (state.map.url) {
+    document.getElementById('app').innerHTML = '<a href="'+ state.map.url + '" target="_blank">View Your Location</a>'
+  }
 });
 //unsubscribe(); //to unsubscribe
 
+store.dispatch(actions.fetchLocation());
+
 var currentState = store.getState();
 console.log('currentState',currentState);
-
+/*
 var action = {
   type: 'CHANGE_SEARCH',
   searchText: 'First Search'
 };
+*/
+store.dispatch(actions.changeSearch('First Search'));
 
-store.dispatch(action);
+store.dispatch(actions.changeSearch('Second Search'));
 
-store.dispatch(changeSearch('Second Search'));
+store.dispatch(actions.addTodo('Walk the dog'));
 
-store.dispatch(addTodo('Walk the dog'));
+store.dispatch(actions.addMovie('Titanic', 'Romance'));
 
-store.dispatch(addMovie('Titanic', 'Romance'));
+store.dispatch(actions.addTodo('Trash'));
 
-store.dispatch(addTodo('Trash'));
+store.dispatch(actions.addTodo('Groceries'));
 
-store.dispatch(addTodo('Groceries'));
-
-store.dispatch(removeTodo(1));
+store.dispatch(actions.removeTodo(1));
