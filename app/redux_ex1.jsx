@@ -54,6 +54,7 @@ var oldreducer = (state = stateDefault, action) => {
     }
 }
 
+//Search Reducer
 var searchReducer = (state = 'Anonymous' , action) => {
   switch (action.type) {
     case 'CHANGE_SEARCH':
@@ -63,6 +64,15 @@ var searchReducer = (state = 'Anonymous' , action) => {
   };
 };
 
+//Action Generator for Search
+var changeSearch = (searchText) => {
+  return {
+    type: 'CHANGE_SEARCH',
+    searchText: searchText
+  }
+};
+
+//Todo Reducer
 var todoReducer = (state = [], action) => {
   switch (action.type) {
     case 'ADD_TODO':
@@ -80,6 +90,21 @@ var todoReducer = (state = [], action) => {
   };
 };
 
+var addTodo = (todo) => {
+  return {
+    type: 'ADD_TODO',
+    todo
+  }
+};
+
+var removeTodo = (id) => {
+  return {
+    type: 'REMOVE_TODO',
+    id : id
+  }
+};
+
+//Movie Reducer
 var movieReducer = (state = [], action) => {
   switch (action.type) {
     case 'ADD_MOVIE':
@@ -94,6 +119,14 @@ var movieReducer = (state = [], action) => {
     default:
       return state;
   };
+};
+
+var addMovie = (movie,genre) => {
+  return {
+    type: 'ADD_MOVIE',
+    movie,
+    genre
+  }
 };
 
 var reducer = redux.combineReducers({
@@ -125,34 +158,14 @@ var action = {
 
 store.dispatch(action);
 
-store.dispatch({
-  type: 'CHANGE_SEARCH',
-  searchText: 'Second Search'
-});
+store.dispatch(changeSearch('Second Search'));
 
-store.dispatch({
-  type: 'ADD_TODO',
-  todo: 'Walk the dog'
-});
+store.dispatch(addTodo('Walk the dog'));
 
-store.dispatch({
-  type: 'ADD_MOVIE',
-  movie: 'Titanic',
-  genre: 'Romance'
-});
+store.dispatch(addMovie('Titanic', 'Romance'));
 
-store.dispatch({
-  type: 'ADD_TODO',
-  todo: 'Trash'
-});
+store.dispatch(addTodo('Trash'));
 
-store.dispatch({
-  type: 'ADD_TODO',
-  todo: 'Groceries'
-});
+store.dispatch(addTodo('Groceries'));
 
-
-store.dispatch({
-  type: 'REMOVE_TODO',
-  id: 1
-});
+store.dispatch(removeTodo(1));
